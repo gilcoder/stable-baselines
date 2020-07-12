@@ -119,11 +119,26 @@ class ACKTR(ActorCriticRLModel):
             return A2CRunner(
                 self.env, self, n_steps=self.n_steps, gamma=self.gamma)
 
+    #def _get_pretrain_placeholders(self):
+    #    policy = self.train_model
+    #    if isinstance(self.action_space, Discrete):
+    #        return policy.obs_ph, self.actions_ph, policy.policy
+    #    return policy.obs_ph, self.actions_ph, policy.deterministic_action
     def _get_pretrain_placeholders(self):
         policy = self.train_model
+
+        if self.initial_state is None:
+            states_ph = None
+            snew_ph = None
+            dones_ph = None
+        else:
+            states_ph = policy.states_ph
+            snew_ph = policy.snew
+            dones_ph = policy.dones_ph
+
         if isinstance(self.action_space, Discrete):
-            return policy.obs_ph, self.actions_ph, policy.policy
-        return policy.obs_ph, self.actions_ph, policy.deterministic_action
+            return policy.obs_ph, self.action_ph, states_ph, snew_ph, dones_ph, policy.policy
+        raise NotImplementedError("WIP: ACKTR does not support Continuous actions yet.")
 
     def setup_model(self):
         with SetVerbosity(self.verbose):

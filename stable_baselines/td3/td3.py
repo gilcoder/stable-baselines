@@ -117,7 +117,8 @@ class TD3(OffPolicyRLModel):
         policy = self.policy_tf
         # Rescale
         policy_out = unscale_action(self.action_space, self.policy_out)
-        return policy.obs_ph, self.actions_ph, policy_out
+        #return policy.obs_ph, self.actions_ph, policy_out
+        return policy.obs_ph, self.actions_ph, None, None, None, policy_out
 
     def setup_model(self):
         with SetVerbosity(self.verbose):

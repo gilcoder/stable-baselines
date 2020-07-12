@@ -239,11 +239,27 @@ class ACER(ActorCriticRLModel):
     def _make_runner(self) -> AbstractEnvRunner:
         return _Runner(env=self.env, model=self, n_steps=self.n_steps)
 
+    #def _get_pretrain_placeholders(self):
+    #    policy = self.step_model
+    #    action_ph = policy.pdtype.sample_placeholder([None])
+    #    if isinstance(self.action_space, Discrete):
+    #        return policy.obs_ph, action_ph, policy.policy
+    #    raise NotImplementedError('Only discrete actions are supported for ACER for now')
     def _get_pretrain_placeholders(self):
         policy = self.step_model
         action_ph = policy.pdtype.sample_placeholder([None])
+
+        if self.policy.recurrent:
+            states_ph = policy.states_ph
+            snew_ph = policy.snew
+            dones_ph = policy.dones_ph
+        else:
+            states_ph = None
+            snew_ph = None
+            dones_ph = None
+
         if isinstance(self.action_space, Discrete):
-            return policy.obs_ph, action_ph, policy.policy
+            return policy.obs_ph, action_ph, states_ph, snew_ph, dones_ph, policy.policy
         raise NotImplementedError('Only discrete actions are supported for ACER for now')
 
     def set_env(self, env):
